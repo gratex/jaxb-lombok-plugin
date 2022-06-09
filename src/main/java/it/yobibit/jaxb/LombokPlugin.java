@@ -1,7 +1,9 @@
 package it.yobibit.jaxb;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
 import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.outline.ClassOutline;
@@ -15,11 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 
-public class LombokPlugin extends Plugin  {
+public class LombokPlugin extends Plugin {
 
     public static final String OPTION_NAME = "Xlombok";
     private final Command defaultCommand;
-    private final Map<String,Command> commands = new HashMap<>();
+    private final Map<String, Command> commands = new HashMap<>();
 
     public LombokPlugin() {
         defaultCommand = new LombokCommand("Data", Getter.class, Setter.class, EqualsAndHashCode.class, ToString.class);
@@ -37,8 +39,10 @@ public class LombokPlugin extends Plugin  {
             @Override
             public void editGeneratedClass(JDefinedClass generatedClass) {
                 generatedClass.annotate(NoArgsConstructor.class);
-                generatedClass.annotate(AllArgsConstructor.class);
-                generatedClass.annotate(Builder.class).param("builderMethodName", "builderFor" + generatedClass.name());
+                if (hasFields(generatedClass)) {
+                    generatedClass.annotate(AllArgsConstructor.class);
+                }
+                generatedClass.annotate(Builder.class);
             }
         });
 
@@ -50,7 +54,17 @@ public class LombokPlugin extends Plugin  {
         });
     }
 
-    private void addLombokCommand(String name, Class ... lombokAnnotation) {
+    private static boolean hasFields(JDefinedClass clazz) {
+        for (JFieldVar f : clazz.fields().values()) {
+            if ((f.mods().getValue() & JMod.STATIC) == JMod.STATIC) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void addLombokCommand(String name, Class... lombokAnnotation) {
         addCommand(new LombokCommand(name, lombokAnnotation));
     }
 
