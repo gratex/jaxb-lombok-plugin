@@ -167,15 +167,10 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus.sfrb.local</id>
-            <name>Release repository</name>
-            <url>https://nexus.sfrb.local/repository/maven-releases/</url>
+            <id>github</id>
+            <name>GitHub gratex Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/gratex/jaxb-lombok-plugin</url>
         </repository>
-        <snapshotRepository>
-            <id>snapshots.nexus.sfrb.local</id>
-            <name>Snapshot repository</name>
-            <url>https://nexus.sfrb.local/repository/maven-snapshots/</url>
-        </snapshotRepository>
     </distributionManagement>
 
 </project>
